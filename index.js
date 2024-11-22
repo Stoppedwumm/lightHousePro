@@ -10,7 +10,7 @@ async function getPgVersion() {
     return result[0]
 }
 app.get("/", async (req, res) => {
-    res.send(await getPgVersion())
+    res.send(process.env)
     getPgVersion();
 });
 app.listen(3000, () => {
