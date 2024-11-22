@@ -1,20 +1,30 @@
 const e = require("express");
-const { neon } = require('@neondatabase/serverless');
 const app = e();
-const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
+const {key} = require("./api.json")
 
-const sql = neon(`postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?sslmode=require`);
+const sql = require("./asyncSQL.js")
 
-if (process.env.NODE_ENV !== "production") {
-    const dotenv = require("dotenv")
-    dotenv.config()
-}
-async function getPgVersion() {
-    const result = await sql(`SELECT version()`);
-    return result[0]
-}
-app.get("/", async (req, res) => {
-    getPgVersion();
+// Create User Table if it doesn't exist
+sql(`CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255),
+    password VARCHAR(255),
+    email VARCHAR(255),
+    projects INT,
+    scenes INT,
+    customEffects INT,
+    planId INT
+)`);
+
+app.post("/api/registerUserPurchase", async (req, res) => {
+    if (req.query.key == key) {
+        
+    }
+});
+app.get("/api/getUsers", async (req, res) => {
+    if (req.query.key == key) {
+        res.json(await sql("SELECT * FROM users"));
+    }
 });
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
