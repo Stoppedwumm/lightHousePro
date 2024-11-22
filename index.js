@@ -5,12 +5,15 @@ const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 
 const sql = neon(`postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?sslmode=require`);
 
+if (process.env.NODE_ENV !== "production") {
+    const dotenv = require("dotenv")
+    dotenv.config()
+}
 async function getPgVersion() {
     const result = await sql(`SELECT version()`);
     return result[0]
 }
 app.get("/", async (req, res) => {
-    res.send(process.env)
     getPgVersion();
 });
 app.listen(3000, () => {
