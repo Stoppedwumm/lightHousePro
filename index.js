@@ -1,7 +1,17 @@
 const e = require("express");
+const { neon } = require('@neondatabase/serverless');
 const app = e();
-app.get("/", (req, res) => {
-    res.send("Hello World!");
+const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
+
+const sql = neon(`postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}/${PGDATABASE}?sslmode=require`);
+
+async function getPgVersion() {
+    const result = await sql(`SELECT version()`);
+    return result[0]
+}
+app.get("/", async (req, res) => {
+    res.send(await getPgVersion())
+    getPgVersion();
 });
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
